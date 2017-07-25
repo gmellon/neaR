@@ -1,9 +1,13 @@
 Package: neaR
-Title: What the Package Does (one line, title case)
 Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-Depends: R (>= 3.3.2)
+Date: 2017-07-25
+Title: A package providing data processing functions for arts administrative data 
+Authors@R: c(person(“Greer”, “Mellon”, role =“aut”))
+Author: Greer Mellon[aut]
+Maintainer: Greer Mellon <greer.mellon@gmail.com>
+Description: This package provides functions for geo-processing data, creating relevant metrics for analysis, and downloading and appending census data relevant to analysis of U.S. arts data. 
+Depends: R (>= 3.3.2),stringr ,sp ,tigris ,RJSONIO,RDSTK ,progress 
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 6.0.1.9000
