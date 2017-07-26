@@ -1,12 +1,11 @@
 Package: neaR
-Version: 0.0.0.9000
+Version: 1.0.0
 Date: 2017-07-25
 Title: A package providing data processing functions for arts administrative data 
-Authors@R: c(person(“greer”, “mellon”, role =c(“aut”, “cre”), email=“greermellon@gmail.com”))
 Author: Greer Mellon[aut]
 Maintainer: Greer Mellon <greer.mellon@gmail.com>
 Description: This package provides functions for geo-processing data, creating relevant metrics for analysis, and downloading and appending census data relevant to analysis of U.S. arts data. 
-Depends: R (>= 3.3.2),stringr ,tigris ,RJSONIO,RDSTK ,progress 
+Depends: R (>= 3.3.2),stringr ,tigris ,RJSONIO,RDSTK ,progress, sp, httr
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
