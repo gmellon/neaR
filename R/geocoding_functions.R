@@ -129,12 +129,12 @@ get_geocode_data<-function(address){
   
   add.chunks <- makeChunkIndex(address.unique, group.size = 100)
   add.coded <- as.list(rep(NA, length(add.chunks)))
-  
-  pb <- progress::progress_bar$new(
+  library(progress)
+  pb <- progress_bar$new(
     format = " downloading [:bar] :percent eta: :eta",
     total = 100, clear = FALSE, width= 60)
   for(ii in which(is.na(add.coded))) {
-    progress:: pb$tick()
+  pb$tick()
     Sys.sleep(1 / 100)
     add.coded[[ii]] <- try(address2LatLon(address.unique[add.chunks[[ii]]]))
     if(class(add.coded[[ii]])=="try-error") {

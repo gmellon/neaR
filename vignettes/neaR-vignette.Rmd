@@ -1,0 +1,103 @@
+---
+title: "neaR: A Package for Processing and Analyzing Arts Data"
+author: "Greer Mellon"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+The neaR package is designed to automate geoprocessing and metrics creation
+useful to the analysis/visualization of NEA administrative data. This guide demonstrates how to utilize all the functions in the package. The package also 
+includes secondary packages, that are dependencies of larger packages. These
+will not be described in depth here, but are documented in relevant help files. 
+
+## neaR Package: Suggested Work Flow
+
+The following workflow is suggested for using the neaR package. Many of the functions
+in this package depend on the execution of other functions in the package. For example, records should be geocoded before they can be matched to Census Tracts. Poverty rates needed to be appended to data, before they can be used to create metrics of High and Low Poverty 
+neighborhoods. 
+
+The packages should therefore be used in the following order: 
+
+1. **Data cleaning**:  If the data file is not geocoded, some preliminary data cleaning
+will be needed to create a clean 'address' variable for geocoding.`get_padded_zip` 
+and `create_full_address` are two functions that are used in data cleaning, and will
+be discussed in further detail below. 
+
+1. **Geocoding**:  `get_geocode_data` This function takes cleaned addresses (created with other functions in this package ), and returns a dataframe with Latitude and Longitude. There is no limit to the number of records that can be geocoded at one time. 
+2. **Identifying International Records**: `create_intl_flag` This function is used to flag whether a record is an international address or not, and is based on values in the "State" column
+of the dataset. 
+
+3. **Appending MSA IDs**:  `get_msa_data` This function is used to append MSAs to records, and MSA IDs are required to create metrics on Rural/Urban Grants, Rural Pop Size etc.
+
+4. **Appending Census Tract IDS**: `get_ct_data`. This function is used to append census tract ids to records. It is useful for when ACS or Census tract level data will be used to create metrics (the main example shown here is for creating poverty rate data)
+
+5. **MSA Based Metrics**: `create_boolean_urban` and `create_urban_type` are 
+important analysis metrics
+
+6. **Census Tract Based Metrics**: `append_poverty_data` is used to append census tract level poverty data from the 5 year American Community Survey (2011-2015 to the data)
+
+7. **Metrics based on NEA data files**: So far, the metrics discussed in this document
+have all been based on geographic variables. For analysis purposes, it is also helpful to automate the creation of metrics relevant to NEA. functions such as `engages_underserved_metric` can be used to calculate relevant metrics for NEA variables. 
+
+## Utilizing the Package: Detailed Instructions
+
+In this section, we walk through an example that utilizes each function. 
+
+
+**1. Creating a Clean Address Variable** 
+
+
+The first step in processing the data, is to create a clean address variable.
+
+First, make sure the zipcode variable in the dataset is 5 characters. You can check with the following code
+
+```c
+ table(nchar(NEA$Zip))
+```
+This is the output we get: 
+
+```c
+     5 
+106396 
+>
+```
+
+Here, the records are all 5 digits. If they were a mix of four or five, you'd need to use the following code to pad to 5 digits. 
+
+```c
+NEA$CoZip<-get_padded_zip(NEA$CoZip)
+```
+Then create a new address variable with the relevant columns specified. This function pastes togethether all of the address components into a single new column, and also cleans problematic characters that will interfere with the geocoding, that uses JSON. 
+
+```c
+NEA$address<-create_full_address(NEA, c("CoAddress1", "CoAddress2",
+                                     "CoCity", "CoState", "CoZip"))
+```
+
+
+**2. Geocoding the Data** 
+
+Now that we have a clean address variable, we're ready to geocode! Run the following function to create a new dataframe with all the relevant geocodes for the values in your dataset. Depending on the size of the file, it might take a few minutes to run
+
+```c
+coords <- get_geocode_data(NEA$address)
+```
+coords is a new dataframe that has three columns, the address, the lat, and the lon. In order to append the lat and lon to our main file, we will need to use the code below. Note, the function outputs the coords data to be in the same order as the original data, making merging easy. 
+
+```c
+NEA$latitude <- coords$lat
+NEA$longitude <- coords$lon
+```
+At this point, it is useful to check a few of the data points, to make sure that everything up to this point went smoothly. 
+
+**2. Matching the data to MSAs**
+
+Once the data is geocoded, we can use the Latitude and Longitude columns to match the data to geographic markers. In this section we demonstrate how to append MSAs to the file, but the process is the same for any of the geographies used in this package: MSAs, counties, congressional districts or census tracts. 
+
+
+
+
