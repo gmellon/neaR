@@ -25,7 +25,7 @@ create_intl_flag<-function(state_var, additions = c() ){
 #' This function can be used to create a column that flags records as either urban
 #' or rural. 
 #' 
-#' Urban records are records that fall into a Metropolitan or Micropolitan
+#' Urban records are records that fall into a Metropolitan or Metropolitan NECTA
 #' statistical area. As a result, MSAs will need to be appended to the data before
 #' this function is utilized. Records not falling into these MSAs are classified
 #' as rural. Records without valid Lat/Long will result in NAs
@@ -34,7 +34,7 @@ create_intl_flag<-function(state_var, additions = c() ){
 #' to "rural" since they will not match a MSA. After adding rural/urban
 #' a international record flag should be used to subset the data. 
 #'
-#' @param MSA_catory Name of column with MSA categories - i.e. M1, M2. should be LSAD
+#' @param MSA_category Name of column with MSA categories - i.e. M1, M2. should be LSAD
 #' @param Latitude Column/vector with latitude 
 #' @return a new column with markers for Rural or Urban 
 #' @export
@@ -64,9 +64,9 @@ create_boolean_urban<-function(MSA_category, Latitude){
 #' to "rural" since they will not match a MSA. After adding rural/urban
 #' a international record flag should be used to subset the data. 
 #'
-#' @param MSA_catory Name of column with MSA categories - i.e. M1, M2. should be LSAD
-#' @param Latitude Column/vector with latitude 
-#' @return a new column with markers for Rural or Urban 
+#' @param MSA_pop Column with population of the MSA. Make sure to manually add in NECTA pop as well.
+#' @param Boolean_Urban_MSA column with rural/urban marker
+#' @return a new column with categories for type of urban area
 #' @export
 
 create_urban_type<-function(MSA_pop, Boolean_Urban_MSA){
@@ -100,7 +100,7 @@ create_urban_type<-function(MSA_pop, Boolean_Urban_MSA){
 #' @param Latitude Column/vector with latitude 
 #' @param cutoff cutoff for defining a high poverty neighborhood, defaults to 20
 
-#' @return a new column with markers for Rural or Urban 
+#' @return a new column with markers for Poverty, Not Poverty, or Missing Data
 #' @export
 
 

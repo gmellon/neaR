@@ -4,5 +4,5 @@ account: rpubs
 server: rpubs.com
 appId: https://api.rpubs.com/api/v1/document/294417/47f10814de684ae2b4884a151e26fc17
 bundleId: https://api.rpubs.com/api/v1/document/294417/47f10814de684ae2b4884a151e26fc17
-url: http://rpubs.com/publish/claim/294417/fcbf65789dc54752bb9119756237b3b4
-when: 1501100314.80122
+url: http://rpubs.com/gmellon/294417
+when: 1501166228.20135

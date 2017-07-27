@@ -12,7 +12,7 @@
 
 <meta name="author" content="Greer Mellon" />
 
-<meta name="date" content="2017-07-26" />
+<meta name="date" content="2017-07-27" />
 
 <title>neaR: A Package for Processing and Analyzing Arts Data</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">neaR: A Package for Processing and Analyzing Arts Data</h1>
 <h4 class="author"><em>Greer Mellon</em></h4>
-<h4 class="date"><em>2017-07-26</em></h4>
+<h4 class="date"><em>2017-07-27</em></h4>
 
 
 
@@ -81,10 +81,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>The packages should therefore be used in the following order:</p>
 <ol style="list-style-type: decimal">
 <li><p><strong>Data cleaning</strong>: If the data file is not geocoded, some preliminary data cleaning will be needed to create a clean ‘address’ variable for geocoding.<code>get_padded_zip</code> and <code>create_full_address</code> are two functions that are used in data cleaning, and will be discussed in further detail below.</p></li>
-<li><strong>Geocoding</strong>: <code>get_geocode_data</code> This function takes cleaned addresses (created with other functions in this package ), and returns a dataframe with Latitude and Longitude. There is no limit to the number of records that can be geocoded at one time.</li>
+<li><p><strong>Geocoding</strong>: <code>get_geocode_data</code> This function takes cleaned addresses (created with other functions in this package ), and returns a dataframe with Latitude and Longitude. There is no limit to the number of records that can be geocoded at one time.</p></li>
 <li><p><strong>Identifying International Records</strong>: <code>create_intl_flag</code> This function is used to flag whether a record is an international address or not, and is based on values in the “State” column of the dataset.</p></li>
 <li><p><strong>Appending MSA IDs</strong>: <code>get_msa_data</code> This function is used to append MSAs to records, and MSA IDs are required to create metrics on Rural/Urban Grants, Rural Pop Size etc.</p></li>
-<li><p><strong>Appending Census Tract IDS</strong>: <code>get_ct_data</code>. This function is used to append census tract ids to records. It is useful for when ACS or Census tract level data will be used to create metrics (the main example shown here is for creating poverty rate data)</p></li>
+<li><p><strong>Appending Census Tract IDS, and Other Geographies</strong>: <code>get_ct_data</code>. This function is used to append census tract ids to records. It is useful for when ACS or Census tract level data will be used to create metrics (the main example shown here is for creating poverty rate data)</p></li>
 <li><p><strong>MSA Based Metrics</strong>: <code>create_boolean_urban</code> and <code>create_urban_type</code> are important analysis metrics</p></li>
 <li><p><strong>Census Tract Based Metrics</strong>: <code>append_poverty_data</code> is used to append census tract level poverty data from the 5 year American Community Survey (2011-2015 to the data)</p></li>
 <li><p><strong>Metrics based on NEA data files</strong>: So far, the metrics discussed in this document have all been based on geographic variables. For analysis purposes, it is also helpful to automate the creation of metrics relevant to NEA. functions such as <code>engages_underserved_metric</code> can be used to calculate relevant metrics for NEA variables.</p></li>
@@ -101,11 +101,12 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">     <span class="dv">5</span> 
 <span class="dv">106396</span> 
 &gt;</code></pre></div>
-<p>Here, the records are all 5 digits. If they were a mix of four or five, you’d need to use the following code to pad to 5 digits.</p>
+<p>Here, the records are all 5 digits. If they were a mix of four or five in the original zip code file, you’d need to use the following code to pad to 5 digits.</p>
 <div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">NEA$CoZip&lt;-get_padded_zip(NEA$CoZip)</code></pre></div>
 <p>Then create a new address variable with the relevant columns specified. This function pastes togethether all of the address components into a single new column, and also cleans problematic characters that will interfere with the geocoding, that uses JSON.</p>
 <div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">NEA$address&lt;-create_full_address(NEA, c(<span class="st">&quot;CoAddress1&quot;</span>, <span class="st">&quot;CoAddress2&quot;</span>,
                                      <span class="st">&quot;CoCity&quot;</span>, <span class="st">&quot;CoState&quot;</span>, <span class="st">&quot;CoZip&quot;</span>))</code></pre></div>
+<p>The “NEA$addess” column is a new clean address column we will use for geocoding.</p>
 <p><strong>2. Geocoding the Data</strong></p>
 <p>Now that we have a clean address variable, we’re ready to geocode! Run the following function to create a new dataframe with all the relevant geocodes for the values in your dataset. Depending on the size of the file, it might take a few minutes to run</p>
 <div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">coords &lt;- get_geocode_data(NEA$address)</code></pre></div>
@@ -113,8 +114,82 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">NEA$latitude &lt;- coords$lat
 NEA$longitude &lt;- coords$lon</code></pre></div>
 <p>At this point, it is useful to check a few of the data points, to make sure that everything up to this point went smoothly.</p>
-<p><strong>2. Matching the data to MSAs</strong></p>
-<p>Once the data is geocoded, we can use the Latitude and Longitude columns to match the data to geographic markers. In this section we demonstrate how to append MSAs to the file, but the process is the same for any of the geographies used in this package: MSAs, counties, congressional districts or census tracts.</p>
+<p><strong>4. Identifying International Records</strong></p>
+<p>At this point, it is helpful to create a column in the dataset that flags international records. All that is required to operate and create this function is a column with state abbreviations.</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">NEA$is.interational&lt;-create_intl_flag(NEA$CoState)</code></pre></div>
+<p>This will return a new column “NEA$is.international” that will be set as “TRUE” if the record is an international address, and “FALSE” if it is domestic.</p>
+<p>The function works by considering any record with a blank state, or a state that is “FO”, “AS”, “FM”, “GU”,“MH”, “MP”, “PW”, “PR”, “VI”, “AE”,“AP”, “AA”, “CM” as international. In the future, it is possible that other abbreviations might also be used as international variables. Say, for example “XX” is a new state name that is used for international records in the future. It is easy to use the function to add this to the list of international records by specifiying it in the function.</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">NEA$is.interational&lt;-create_intl_flag(NEA$CoState, additions=c(<span class="st">&quot;XX&quot;</span>))</code></pre></div>
+<p><strong>4. Matching the data to MSAs</strong></p>
+<p>Once the data is geocoded, we can use the Latitude and Longitude columns to match the data to geographic markers. In this section we demonstrate how to append MSAs to the file, but the process is the same for any of the geographies used in this package: MSAs, counties, congressional districts or census tracts, which will be discussed in the next section.</p>
+<p>First, use the <code>get_MSA_data</code> function to create a new dataframe that will store MSA identifier data in the same order as the original dataset.</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">msa.info &lt;- get_MSA_data(Latitude = NEA$CoLatitude, Longitude = NEA$CoLongitude)
+names(msa.info)</code></pre></div>
+<p>“msa.info” will be a dataframe with three columns: cbsa_GEOID, cbsa_LSAD, and cbsa_NAMELSAD. You can easily append them to the original dataset using the following code.</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">NEA$msa_GEOID &lt;- msa.info$cbsa_GEOID
+NEA$msa_NAMELSAD &lt;- msa.info$cbsa_NAMELSAD
+NEA$msa_LSAD &lt;- msa.info$cbsa_LSAD</code></pre></div>
+<p>With the code shown above, MSA markers are added to the data file.</p>
+<p><strong>5. Appending Census Tract IDS, and Other Geographies</strong></p>
+<p>Appending other geographies is very similar to the process shown for appending MSAs. Each set of geographic markers, though, has different data associated with it that may be useful, so the information you want to append for each type of geography will be slightly different. We’ll go through examples here.</p>
+<p>First, it will be important to append census tracts, which are used to append Census data at the tract level to the main file. Use the <code>get_ct_data</code> to create a new data frame called <code>tract.info</code> that will store the census tract IDs for the main file.</p>
+<pre><code>tract.info &lt;- get_ct_data(Latitude = NEA$CoLatitude, Longitude = NEA$CoLongitude)</code></pre>
+<p>Since “tract.info” will be in the same order as the original data file, you can easily append it to the main file with the following code.</p>
+<pre><code>NEA$CT_NAMELSAD &lt;- tract.info$CT_NAMELSAD
+names(tract.info)
+NEA$CT_GEOID &lt;- tract.info$CT_GEOID</code></pre>
+<p>The process for other geographies - counties and congressional districts is very similar.</p>
+<p>For congressional districts, use the following code.</p>
+<pre><code>CD&lt;-get_CD_data(NEA$CoLatitude,NEA$CoLongitude )
+names(CD)
+NEA$CD_GEOID&lt;- CD$CD_GEOID
+NEA$CD_NAMELSAD&lt;- CD$CD_NAMELSAD
+</code></pre>
+<p>And for counties…</p>
+<pre><code>county&lt;-get_county_data(NEA_test$CoLatitude, NEA_test$CoLongitude)
+NEA$county_GEOID&lt;- county$county_GEOID
+NEA$county_NAMELSAD&lt;- county$county_NAMELSAD
+</code></pre>
+<p><strong>6. MSA Based Metrics</strong>: The following two functions, <code>create_boolean_urban()</code> and <code>create_urban_type()</code> require MSA id variables: GEOID, NAMELSAD, and LSAD (or however you named those three variables) to have been appended to the main file.</p>
+<p><strong>create_boolean_urban</strong> The first metric we’ll discuss is <code>create_boolean_urban()</code>. This function takes information from the LSAD variable, and returns a column that categories records as “URBAN” or “RURAL”.</p>
+<p>“URBAN” records are records that fall into a Metropolitan or Metropolitan NECTA statistical area. As a result, MSAs will need to be appended to the data before this function is utilized. Records not falling into these MSAs are classified as rural. Records without valid Lat/Long will result in NAs</p>
+<p>Note, caution should be exercised with international records, they are defaulted to “rural” since they will not match a MSA. After adding rural/urban a international record flag should be used to subset the data.</p>
+<pre><code>NEA$rural.urban.flag&lt;-create_boolean_urban(NEA$msa_LSAD, NEA$CoLatitude)</code></pre>
+<p><strong>create_urban_type</strong></p>
+<p>This function requires two columns: <em>a column that designates records urban/rural which is created using the <code>create_boolean_urban()</code> function described above. </em>a second column that has population data on each MSA.</p>
+<p>The second requirement is not something that can easily be built on this R package, because it requires external excel/csv data downloaded from the census. Here we walk through how to merge this population data onto the file. Note, this is the process for 2016 data. A different website link may be required for future data. This matching can also be done in STATA as well:</p>
+<p>Once the population data has been added to the file, you can run the <code>create_urban_type()</code> variable with the following code.</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">NEA$urban.type&lt;-create_urban_type(NEA$MSA_pop, MSA$rural.urban.flag)</code></pre></div>
+<p><strong>7. Census Tract Based Metrics</strong></p>
+<p>Another metric we often use on NEA data is poverty rate, which is calculated based on the poverty rate in the census tract that the record is located in. Downloading and cleaning the ACS data is a long process, so we’ve developed a function to automate this process for 2011-2015 ACS 5-year data. At the end of the section, we discuss how to modify the function if data is needed for future years, say the 2012-2016 ACS when it is released.</p>
+<p>For now, we’ll walk through how to append these records for the 2011-2015 ACS 5-year data.</p>
+<p>First, create a new blank column in your original data frame.</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">NEA$poverty_rate&lt;-NA</code></pre></div>
+<p>Then, run the <code>append_poverty_data()</code> function with the following code. The poverty rate will be entered into the new column that was just created.</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">NEA$poverty_rate&lt;-append_poverty_data( NEA$CT_GEOID, NEA_test$poverty_rate)</code></pre></div>
+<p>This column appends the poverty rate for the data, but we’re also interested in creating a separate column that has an indicator of whether the record is in high poverty neighborhood, or a low poverty neighborhood. This can be achieved with the <code>create_poverty_flag()</code> function.</p>
+<p>This function requires that the poverty rate has been appended to the data. To utilize it, use the following code.</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">NEA$poverty_flag&lt;-create_poverty_flag(NEA$poverty_rate, NEA$CoLatitude)</code></pre></div>
+<p>This categorizies records with poverty rates at or above 20% as “Poverty”, lower than 20% as “Not Poverty”, and missing data (i.e. records in industrial areas with 0 pop) as “Missing Data”. The function is also designed to allow for the calculation based on other cutoffs. If we were interested in defining poverty as areas with above 30% poverty, we’d use the following code. Note, that no cutoff needs to be specified for 20%, as that’s the default cutoff</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">NEA$poverty_flag&lt;-create_poverty_flag(NEA$poverty_rate, NEA$CoLatitude, cutoff=<span class="dv">30</span>)</code></pre></div>
+<p>This is the quickest way to run the code for 2011-2015 ACS 5 year data, but what if we’re interested in a different vintage? In that case, you’ll need to run a slightly longer version of code, and utilize intermediate functions that are included under the hood of the <code>append_poverty_data()</code> function. Here’s all the code that would be needed to go through the same process of appending poverty rates and creating a poverty flag column for the ACS 5 year data that ends in 2016 (note, this is just theoretical. 2016 data has not been released yet).</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">poverty&lt;-tract_level_data(year=<span class="st">&quot;2016&quot;</span>, survey=<span class="st">&quot;ACS5&quot;</span>, table=<span class="st">&quot;B17021_002E&quot;</span>)
+population&lt;-tract_level_data(year=<span class="st">&quot;2016&quot;</span>, survey=<span class="st">&quot;ACS5&quot;</span>, table=<span class="st">&quot;B17021_001E&quot;</span>)
+
+full.poverty.data&lt;-get_poverty_rates(poverty, population)
+  
+NEA$poverty_rate&lt;-NA
+NEA$poverty_rate[is.na(NEA$poverty_rate)]&lt;-full.poverty.data$pctpov[match(
+NEA$CT_GEOID[is.na(NEA$poverty_rate)],full.poverty.data$CT_GEOID)]
+
+NEA$poverty_flag&lt;-create_poverty_flag(NEA$poverty_rate, NEA$CoLatitude)</code></pre></div>
+<p>Note that this code assumes that Census will continue to use the same format for its API. If Census changes how it operates at some time in the future, this function will no longer work as written.</p>
+<p>It is worth noting that the intermediary function used in this function, <code>tract_level_data()</code> is very useful in its own right. It allows you to download, in loop, a national-level file of data at the census tract level. The Census only allows you to download census tract data at the state level, so this is a big value add. If you’re interested in another data table, you can use the same function to get that data downloaded. Just set a different table, and label it as a data frame that’s descriptive. Here’s the raw code for the poverty data.</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">poverty&lt;-tract_level_data(year=<span class="st">&quot;2015&quot;</span>, survey=<span class="st">&quot;ACS5&quot;</span>, table=<span class="st">&quot;B17021_002E&quot;</span>)</code></pre></div>
+<p>Then, you’d attach that data to the main file by matching census tract IDs. Adapt this section of the code below:</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">NEA$poverty_rate&lt;-NA
+NEA$poverty_rate[is.na(NEA$poverty_rate)]&lt;-full.poverty.data$pctpov[match(
+NEA$CT_GEOID[is.na(NEA$poverty_rate)],full.poverty.data$CT_GEOID)]</code></pre></div>
 </div>
 
 
