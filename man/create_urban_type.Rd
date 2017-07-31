@@ -7,12 +7,12 @@
 create_urban_type(MSA_pop, Boolean_Urban_MSA)
 }
 \arguments{
-\item{MSA_catory}{Name of column with MSA categories - i.e. M1, M2. should be LSAD}
+\item{MSA_pop}{Column with population of the MSA. Make sure to manually add in NECTA pop as well.}
 
-\item{Latitude}{Column/vector with latitude}
+\item{Boolean_Urban_MSA}{column with rural/urban marker}
 }
 \value{
-a new column with markers for Rural or Urban
+a new column with categories for type of urban area
 }
 \description{
 This function can be used to create a column that categorizes

@@ -14,7 +14,7 @@ create_poverty_flag(pov_column, Latitude, cutoff = 20)
 \item{cutoff}{cutoff for defining a high poverty neighborhood, defaults to 20}
 }
 \value{
-a new column with markers for Rural or Urban
+a new column with markers for Poverty, Not Poverty, or Missing Data
 }
 \description{
 This function can be used to create a column that categorizes

@@ -240,12 +240,13 @@ get_ct_data<- function(Latitude, Longitude){
   complete_spatial$CT_GEOID <- NA
   complete_spatial$CT_NAMELSAD <- NA
   
-  pb <- progress::progress_bar$new(
+  library(progress)
+  pb <- progress_bar$new(
     format = " downloading [:bar] :percent eta: :eta",
     total = 100, clear = FALSE, width= 60)
   
   for( i in c(1:4, 6:nrow(state_fips))) {
-    progress::pb$tick()
+    pb$tick()
     Sys.sleep(1 / 100)
     census_tract_sf<-tigris::tracts(state_fips$State_FIPS[i] , cb=F)
     sp::proj4string(complete_spatial)<-sp::proj4string(census_tract_sf)

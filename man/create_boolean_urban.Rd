@@ -7,9 +7,9 @@
 create_boolean_urban(MSA_category, Latitude)
 }
 \arguments{
-\item{Latitude}{Column/vector with latitude}
+\item{MSA_category}{Name of column with MSA categories - i.e. M1, M2. should be LSAD}
 
-\item{MSA_catory}{Name of column with MSA categories - i.e. M1, M2. should be LSAD}
+\item{Latitude}{Column/vector with latitude}
 }
 \value{
 a new column with markers for Rural or Urban
@@ -19,7 +19,7 @@ This function can be used to create a column that flags records as either urban
 or rural.
 }
 \details{
-Urban records are records that fall into a Metropolitan or Micropolitan
+Urban records are records that fall into a Metropolitan or Metropolitan NECTA
 statistical area. As a result, MSAs will need to be appended to the data before
 this function is utilized. Records not falling into these MSAs are classified
 as rural. Records without valid Lat/Long will result in NAs
