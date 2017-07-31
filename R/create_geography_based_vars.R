@@ -76,7 +76,7 @@ create_urban_type<-function(MSA_pop, Boolean_Urban_MSA){
   urban_type[is.na(urban_type)& Boolean_Urban_MSA=="Urban"& MSA_pop>=50000 & MSA_pop<250000]<-"50,000 to 249,999"
   urban_type[is.na(urban_type)& Boolean_Urban_MSA=="Urban"& MSA_pop>=250000 & MSA_pop<1000000]<-"250,000 to 999,999"
   urban_type[is.na(urban_type)& Boolean_Urban_MSA=="Urban"& MSA_pop>999999 & MSA_pop<4600000]<-"1 Million to Less than 4.6 Million"
-  urban_type[is.na(urban_type)& Boolean_Urban_MSA=="Urban"& MSA_pop>=4600000]<-"4.6 Million and More"
+  urban_type[is.na(urban_type)& Boolean_Urban_MSA=="Urban" & MSA_pop>=4600000]<-"4.6 Million and More"
   urban_type[is.na(urban_type)& Boolean_Urban_MSA=="Rural"]<-"Rural"
   return(urban_type)
 }
@@ -108,6 +108,6 @@ create_poverty_flag <-function(pov_column, Latitude, cutoff=20){
   
   poverty<- rep(NA, length(pov_column))
   poverty[pov_column>=cutoff]<-'Poverty'
-  povertyy[pov_column<cutoff]<-'Not Poverty'
+  poverty[pov_column<cutoff]<-'Not Poverty'
   poverty[is.na(pov_column)]<-'Missing Data'
   return(poverty) }
