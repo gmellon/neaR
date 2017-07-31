@@ -104,6 +104,7 @@ create_full_address<-function(data, address.vars) {
   address <- gsub(" +", " ", address)
   address <- gsub("[^[:graph:]]", " ", address)
   address <- gsub("\"", " ", address)
+  address<- gsub("/", " ", address)
   return(address)
 }
 
