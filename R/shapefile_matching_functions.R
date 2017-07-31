@@ -256,7 +256,7 @@ get_ct_data<- function(Latitude, Longitude){
   
   #california - embedded problem with more detailed file in tigris 
   census_tract_sf<-tigris::tracts(state="06" , cb=T)
-  sp::proj4string(complete_spatial) <- sp::proj4string(census_tract)
+  sp::proj4string(complete_spatial) <- sp::proj4string(census_tract_sf)
   complete_spatial$CT_GEOID[is.na(complete_spatial$CT_GEOID)] <- sp::over(complete_spatial[is.na(complete_spatial$CT_GEOID),], census_tract_sf)$GEOID
   
   matched_spatial <- data.frame(ID = complete_spatial$ID, 
