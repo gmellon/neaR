@@ -12,7 +12,7 @@
 
 <meta name="author" content="Greer Mellon" />
 
-<meta name="date" content="2017-07-27" />
+<meta name="date" content="2017-08-04" />
 
 <title>neaR: A Package for Processing and Analyzing Arts Data</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">neaR: A Package for Processing and Analyzing Arts Data</h1>
 <h4 class="author"><em>Greer Mellon</em></h4>
-<h4 class="date"><em>2017-07-27</em></h4>
+<h4 class="date"><em>2017-08-04</em></h4>
 
 
 
@@ -87,7 +87,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><p><strong>Appending Census Tract IDS, and Other Geographies</strong>: <code>get_ct_data</code>. This function is used to append census tract ids to records. It is useful for when ACS or Census tract level data will be used to create metrics (the main example shown here is for creating poverty rate data)</p></li>
 <li><p><strong>MSA Based Metrics</strong>: <code>create_boolean_urban</code> and <code>create_urban_type</code> are important analysis metrics</p></li>
 <li><p><strong>Census Tract Based Metrics</strong>: <code>append_poverty_data</code> is used to append census tract level poverty data from the 5 year American Community Survey (2011-2015 to the data)</p></li>
-<li><p><strong>Metrics based on NEA data files</strong>: So far, the metrics discussed in this document have all been based on geographic variables. For analysis purposes, it is also helpful to automate the creation of metrics relevant to NEA. functions such as <code>engages_underserved_metric</code> can be used to calculate relevant metrics for NEA variables.</p></li>
+<li><p><strong>Metrics based on NEA data files</strong>: So far, the metrics discussed in this document have all been based on geographic variables. For analysis purposes, it is also helpful to automate the creation of metrics relevant to NEA. functions such as <code>create_discipline_tag</code> can be used to calculate relevant metrics for NEA variables.</p></li>
 </ol>
 </div>
 <div id="utilizing-the-package-detailed-instructions" class="section level2">
@@ -190,6 +190,11 @@ NEA$poverty_flag&lt;-create_poverty_flag(NEA$poverty_rate, NEA$CoLatitude)</code
 <div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">NEA$poverty_rate&lt;-NA
 NEA$poverty_rate[is.na(NEA$poverty_rate)]&lt;-full.poverty.data$pctpov[match(
 NEA$CT_GEOID[is.na(NEA$poverty_rate)],full.poverty.data$CT_GEOID)]</code></pre></div>
+<p><strong>8. Metrics Based on NEA Files</strong></p>
+<p>The package also includes functions for calculating metrics based on NEA administrative data.</p>
+<p>The function <code>create_discipline_tag</code> recodes the “Discipline Variable” in the file, and creates a new constructed variable that has streamlined discipline categories for use in data visualization.</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">NEA$Constructed_Discipline&lt;-NA
+NEA$Constructed_Discipline&lt;-create_discipline_tag(NEA$Discipline)</code></pre></div>
 </div>
 
 

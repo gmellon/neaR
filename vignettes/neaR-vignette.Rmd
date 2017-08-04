@@ -42,7 +42,7 @@ important analysis metrics
 7. **Census Tract Based Metrics**: `append_poverty_data` is used to append census tract level poverty data from the 5 year American Community Survey (2011-2015 to the data)
 
 8. **Metrics based on NEA data files**: So far, the metrics discussed in this document
-have all been based on geographic variables. For analysis purposes, it is also helpful to automate the creation of metrics relevant to NEA. functions such as `engages_underserved_metric` can be used to calculate relevant metrics for NEA variables. 
+have all been based on geographic variables. For analysis purposes, it is also helpful to automate the creation of metrics relevant to NEA. functions such as `create_discipline_tag` can be used to calculate relevant metrics for NEA variables. 
 
 ## Utilizing the Package: Detailed Instructions
 
@@ -256,3 +256,13 @@ NEA$poverty_rate<-NA
 NEA$poverty_rate[is.na(NEA$poverty_rate)]<-full.poverty.data$pctpov[match(
 NEA$CT_GEOID[is.na(NEA$poverty_rate)],full.poverty.data$CT_GEOID)]
 ``` 
+**8. Metrics Based on NEA Files**
+
+The package also includes functions for calculating metrics based on NEA administrative data. 
+
+The function `create_discipline_tag` recodes the "Discipline Variable" in the file, and creates a new constructed variable that has streamlined discipline categories for use in data visualization. 
+
+```c
+NEA$Constructed_Discipline<-NA
+NEA$Constructed_Discipline<-create_discipline_tag(NEA$Discipline)
+```

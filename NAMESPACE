@@ -3,6 +3,7 @@
 export(address2LatLon)
 export(append_poverty_data)
 export(create_boolean_urban)
+export(create_discipline_tag)
 export(create_full_address)
 export(create_intl_flag)
 export(create_poverty_flag)
