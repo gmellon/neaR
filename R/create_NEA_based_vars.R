@@ -55,9 +55,8 @@ create_discipline_tag<-function(discipline){
   
   new_discipline[which(discipline %in% c("Music"))] <- "Music"
   
-  new_discipline[which(discipline %in% c("Musical Theater", "Theater & Musical Theater"))] <- "Musical Theater"
-  
-  new_discipline[which(discipline %in% c("Theater"))] <- "Theater"
+  new_discipline[which(discipline %in% c("Musical Theater", "Theater & Musical Theater",
+                                         "Theater"))] <- "Theater and Musical Theater"
   
   new_discipline[which(discipline %in% c("Opera"))] <- "Opera"
   
