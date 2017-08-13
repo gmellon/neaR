@@ -56,7 +56,7 @@ create_boolean_urban<-function(MSA_category, Latitude){
 #' records based on urban population size
 #' 
 #' It requires that the dataset already has a rural/urban marker, and that
-#' it has a second column with MSA and NECTA population data - should
+#' it has a second column with MSA and NECTA population data - this should
 #' be downloaded and appended from the Census, and matched based on CBSA and 
 #' NECTA ids. 
 #' 
@@ -86,12 +86,12 @@ create_urban_type<-function(MSA_pop, Boolean_Urban_MSA){
 #' Create Poverty/Not Poverty Flag
 #'
 #' This function can be used to create a column that categorizes
-#' records based on their poverty rate. 
+#' records based on the poverty rates of the census tracts they are located in.
 #' 
 #' It requires that the dataset already has a column for poverty rate
 #' for the census tract in which the record is located, 
 #' which can be created using the relevant poverty packages in this
-#' r package. 
+#' R package.
 #' 
 #' Note, that areas without population or without poverty rates are labeled
 #' "Missing Data"  
